@@ -69,7 +69,7 @@ udivby10:
 // Output: none
 // Invariables: This function must not permanently modify registers R4 to R11
 .equ count, 0 //binding
-OutDec:
+OutDec2:
   PUSH {R4-R7,LR}
    PUSH {R4} //allocation
    MOV R7, SP
@@ -118,9 +118,9 @@ B PRINT
 // Output: none
 // Invariables: This function must not permanently modify registers R4 to R11
 .equ space, 0//binding
-OutDec2:
+OutDec:
    PUSH {R5, LR}
-   PUSH {R1}//allocation
+   PUSH {R1}/*allocation*/
 // write this
 CMP R0, #0
 BNE NEWCHAR
@@ -130,18 +130,18 @@ B DONE2
 
 NEWCHAR:
 BL udivby10
-STR R1, [SP, #space]//access
+STR R1, [SP, #space]/*access*/
 CMP R0, #0
 BEQ PRINT2
-BL OutDec2
+BL OutDec
 
 PRINT2:
-LDR R0, [SP, #space]//access
+LDR R0, [SP, #space]/*access*/
 ADDS R0, 0x30
 BL OutChar
 
 DONE2:
-POP{R1}//deallocate
+POP{R1}/*deallocate*/
 POP  {R5, PC}
 
      .end
