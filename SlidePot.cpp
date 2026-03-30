@@ -11,32 +11,26 @@
 
 
 void SlidePot::Init(void){
-// write code to initialize ADC1 channel 5, PB18
-// Your measurement will be connected to PB18
-// 12-bit mode, 0 to 3.3V, right justified
-// software trigger, no averaging
-  ADC1->ULLMEM.GPRCM.RSTCTL = 0xB1000003;   //reset
-  ADC1->ULLMEM.GPRCM. PWREN = 0x26000001;   //active
-  Clock Delay (24) ;                        //wait
-  ADC1->ULLMEM.GPRCM.CLKCFG = 0xA9000000;
-  ADC1->ULLMEM.CLKFREQ = 7;
-  ADC1->ULLMEM.CTLO = 0x03010000;
-  ADC1->ULLMEM.CTL1 = 0x00000000;
-  ADC1->ULLMEM.CTL2 = 0x00000000;
-  ADC1->ULLMEM.MEMCTL[0] = 5;
-  ADC1->ULLMEM.SCOMPO = 0;
-  // write this
-}
-uint32_t SlidePot::In(void){
-  // write code to sample ADC1 channel 5, PB18 once
-  // return digital result (0 to 4095)
-  ADC1->ULLMEM.CTLO |= 0x00000001;
-  ADC1->ULLMEM.CTL1 |= 0x00000100;
-  uint32 t volatile delay=ADC1->ULLMEM.STATUS;
-  while((ADC1->ULLMEM.STATUS&0x01) == 0x01) {}
-  return ADC1->ULLMEM.MEMRES [0];
+    ADC1->ULLMEM.GPRCM.RSTCTL = 0xB1000003;
+    ADC1->ULLMEM.GPRCM.PWREN  = 0x26000001;
+    Clock_Delay(24);
+    ADC1->ULLMEM.GPRCM.CLKCFG = 0xA9000000;
+    ADC1->ULLMEM.CLKFREQ       = 7;
+    ADC1->ULLMEM.CTL0          = 0x03010000;
+    ADC1->ULLMEM.CTL1          = 0x00000000;
+    ADC1->ULLMEM.CTL2          = 0x00000000;
+    ADC1->ULLMEM.MEMCTL[0]     = 5;           // channel 5 = PB18
+    ADC1->ULLMEM.SCOMP0        = 0;
+    ADC1->ULLMEM.CPU_INT.IMASK = 0;           // no interrupt
 }
 
+uint32_t SlidePot::In(void){
+    ADC1->ULLMEM.CTL0 |= 0x00000001;         // enable conversions
+    ADC1->ULLMEM.CTL1 |= 0x00000100;         // start ADC
+    uint32_t volatile delay = ADC1->ULLMEM.STATUS; // let ADC start
+    while((ADC1->ULLMEM.STATUS & 0x01) == 0x01){}  // wait for completion
+    return ADC1->ULLMEM.MEMRES[0];           // 12-bit result
+}
 
 // constructor, invoked on creation of class
 // m and b are linear calibration coefficents
