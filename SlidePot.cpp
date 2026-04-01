@@ -54,6 +54,8 @@ SlidePot::SlidePot(uint32_t m, uint32_t b){
 
 void SlidePot::Save(uint32_t n){
     // write this
+    data = n;
+    flag = 1;
 }
 uint32_t SlidePot::Convert(uint32_t n){
   n *= slope;
@@ -69,12 +71,18 @@ float SlidePot::FloatConvert(uint32_t input){
 
 void SlidePot::Sync(void){
   // write this
+  while(flag == 0)
+  {
+  }
+  
+  flag = 0;
 
     // wait for semaphore, then clear semaphore
 }
 
 
 uint32_t SlidePot::Distance(void){  // return distance value (0 to 2000), 0.001cm
-   return 42; // replace this with solution
+   distance = Convert(data);
+   return distance;
 }
 
