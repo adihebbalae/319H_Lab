@@ -171,7 +171,7 @@ void TIMG12_IRQHandler(void){
     GPIOB->DOUTTGL31_0 = GREEN; // toggle PB27 (minimally intrusive debugging)
     Time++;
     // sample
-    
+    Sensor.Save(Sensor.In());
     // store data into mailbox
     // set the semaphore
     GPIOB->DOUTTGL31_0 = GREEN; // toggle PB27 (minimally intrusive debugging)
@@ -194,6 +194,7 @@ int main(void){ // main5
   TExaS_Init(0,0,&TExaS_LaunchPadLogicPB27PB26); // PB27 and PB26
   ST7735_PlotClear(0,2000);
     // initialize interrupts on TimerG12 at 30 Hz
+    TimerG12_IntArm(2666667, 2);
  
   Time = 0;
   __enable_irq();
@@ -201,11 +202,15 @@ int main(void){ // main5
   while(1){
        // complete this
     // wait for semaphore using a call to a method in Sensor
+    Sensor.Sync();
 
     GPIOB->DOUTTGL31_0 = RED; // toggle PB26 (minimally intrusive debugging)
     GPIOB->DOUTTGL31_0 = RED; // toggle PB26 (minimally intrusive debugging)
     // toggle red LED2 on Port B, PB26
      // convert Data to Position
+     Position = Sensor.Distance();
+     ST7735_SetCursor(0, 0);
+     OutFix(Position);
    // move cursor to top
    // display distance in top row OutFix
 
