@@ -192,13 +192,44 @@ int main4R(void){ // main4R
 // should take 4*10*421.06us = 16.84ms
 void TIMG12_IRQHandler(void){uint32_t pos;
   if((TIMG12->CPU_INT.IIDX) == 1){ // this will acknowledge
-    GPIOB->DOUTTGL31_0 = GREEN; // toggle PB27 (minimally intrusive debugging)
-  // increment TransmitCount
-  // sample 12-bit ADC0 channel 5, slidepot
-    GPIOB->DOUTTGL31_0 = GREEN; // toggle PB27 (minimally intrusive debugging)
-  // convert to fixed point distance
-  // output 4-frame message
-    GPIOB->DOUTTGL31_0 = GREEN; // toggle PB27 (minimally intrusive debugging)
+    
+    // 1. Toggle PB27 heartbeat
+    GPIOB->DOUTTGL31_0 = GREEN;
+    
+    // 2. Sample 12-bit ADC, slidepot
+    Data = Sensor.In(); // 12-bit ADC sample 0-4095
+    
+    // 3. Toggle PB27 heartbeat
+    GPIOB->DOUTTGL31_0 = GREEN;
+    
+    // 4. Convert to distance and create 4-byte message
+    Position = Sensor.Convert(Data); // fixed point 0.001cm, 0-2000
+    
+    // Position is 0-2000, format as d1.d2d3 cm
+    // e.g. 1547 -> '1','5','4','7' but we only send 3 digits d1,d2,d3
+    // e.g. 1547 means 1.547cm -> send '1','5','4'
+    uint32_t d1 = Position / 1000;       // e.g. 1
+    uint32_t d2 = (Position / 100) % 10; // e.g. 5
+    uint32_t d3 = (Position / 10) % 10;  // e.g. 4
+    
+    output[0] = 0x3C;        // '<' sync byte
+    output[1] = '0' + d1;   // digit 1
+    output[2] = '0' + d2;   // digit 2
+    output[3] = '0' + d3;   // digit 3
+    
+    // 5. Send 4-byte message via IR
+    IRxmt_OutChar(output[0]);
+    IRxmt_OutChar(output[1]);
+    IRxmt_OutChar(output[2]);
+    IRxmt_OutChar(output[3]);
+    
+    // 6. Increment transmit counter
+    TransmitCount++;
+    
+    // 7. Toggle PB27 heartbeat
+    GPIOB->DOUTTGL31_0 = GREEN;
+    
+    // 8. return from interrupt
   }
 }
 // Connect dual channel scope to transmitter sensor PA8, sensor output, receiver PA22
