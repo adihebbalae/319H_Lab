@@ -12,7 +12,7 @@
 #include "../inc/FIFO2.h"
 
 uint32_t LostData;
-uint32_t RxCounter
+uint32_t RxCounter;
 Queue FIFO2;
 
 // power Domain PD0
@@ -37,14 +37,14 @@ void UART2_Init(void){
    UART2->CLKDIV = 0x00;
 
    UART2->CTL0 &= ~0x01;
-   UART2->CTL0 = 0x00020000;
+   UART2->CTL0 = 0x00020018;
 
-   UART2->IBRD = 2105;
-   UART2->FBRD = 17;
+   UART2->IBRD = 1052;
+   UART2->FBRD = 40;
 
 
    UART2->IFLS  = 0x400;
-   UART2->IMSC = 0x40;
+   UART2->CPU_INT.IMASK = 0x40;
    UART2->LCRH = 0x00000070;
    UART2->CTL0 |= 0x01;
 
@@ -67,7 +67,7 @@ while(FIFO2.Get(&out) == false)
 extern "C" void UART2_IRQHandler(void);
 void UART2_IRQHandler(void){ uint32_t status; char letter;
   status = UART2->CPU_INT.IIDX; // reading clears bit in RTOUT
-  if(status == 0x01){   // 0x01 receive timeout
+  if(status == 0x07){   // 0x01 receive timeout
     GPIOB->DOUTTGL31_0 = BLUE; // toggle PB22 (minimally intrusive debugging)
     GPIOB->DOUTTGL31_0 = BLUE; // toggle PB22 (minimally intrusive debugging)
     // read all data, putting in FIFO
