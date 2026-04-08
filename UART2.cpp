@@ -12,6 +12,7 @@
 #include "../inc/FIFO2.h"
 
 uint32_t LostData;
+uint32_t RxCounter
 Queue FIFO2;
 
 // power Domain PD0
@@ -57,7 +58,10 @@ void UART2_Init(void){
 //         Return nonzero data from the FIFO1 if available
 char UART2_InChar(void){char out;
 // write this
-  return 0;
+while(FIFO2.Get(&out) == false)
+{
+}
+  return out;
 }
 
 extern "C" void UART2_IRQHandler(void);
@@ -68,7 +72,15 @@ void UART2_IRQHandler(void){ uint32_t status; char letter;
     GPIOB->DOUTTGL31_0 = BLUE; // toggle PB22 (minimally intrusive debugging)
     // read all data, putting in FIFO
     // finish writing this
-
+    while((UART2->STAT&0x4) == 0)
+    {
+      char test = UART2->RXDATA;
+      if(FIFO2.Put(test)== false)
+      {
+        LostData++;
+      }
+    }
+    RxCounter++;
     GPIOB->DOUTTGL31_0 = BLUE; // toggle PB22 (minimally intrusive debugging)
   }
 }
