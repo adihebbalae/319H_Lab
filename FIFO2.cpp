@@ -69,4 +69,3 @@ void Queue::Print(void){
         ST7735_OutChar(output);
     }
 }
-
