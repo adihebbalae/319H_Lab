@@ -31,7 +31,6 @@ void PLL_Init(void){ // set phase lock loop (PLL)
 uint32_t ReceiveCount,TransmitCount;
 uint32_t Position; // fixed point 0.001cm, in receiver
 uint32_t Data;     // 12-bit raw ADC data in transmitter
-char output[4];
 
 SlidePot Sensor(1500,0); // copy calibration from Lab 7
 
@@ -45,13 +44,13 @@ SlidePot Sensor(1500,0); // copy calibration from Lab 7
 // err should be 0
 Queue FIFO;
 int err,count;
-int main1r(void){ // main1R
-  char data = 'A'; char out;
+int main1R(void){ // main1R
+  char data = 0; char out;
   bool result;
   __disable_irq();
   PLL_Init();     // set system clock to 80 MHz
   LaunchPad_Init();
-  ST7735_InitPrintf(INITR_BLACKTAB); // INITR_REDTAB for AdaFruit, INITR_BLACKTAB for HiLetGo
+  ST7735_InitPrintf(INITR_REDTAB); // INITR_REDTAB for AdaFruit, INITR_BLACKTAB for HiLetGo
   while(1){
     count=0;
     for(int i=0; i<10; i++){
@@ -153,7 +152,7 @@ int main3R(void){ // main3R
 //   run main4T on transmitter
 //   run main4R on receiver, start receiver first
 //   verify pulses on transmitter convert to UART protocol on sensor output, receiver PA22
-int main(void){ // main4T
+int main4T(void){ // main4T
   __disable_irq();
   PLL_Init();     // set system clock to 80 MHz
   LaunchPad_Init();
@@ -174,6 +173,7 @@ int main4R(void){ // main4R
   UART2_Init();   // just receive, PA22, receiver timeout interrupt synchronization
   __enable_irq(); // interrupts for UART2
   while(1){ // message is 1.234 cm
+  //ST7735_FillScreen(ST7735_BLACK);
     data1 = UART2_InChar(); // should be 0x3C
     data2 = UART2_InChar(); // should be 31
     ST7735_OutChar(data2);
@@ -187,9 +187,9 @@ int main4R(void){ // main4R
 }
 
 
-
 // sampling frequency is 30 Hz
 // should take 4*10*421.06us = 16.84ms
+char output[4];
 void TIMG12_IRQHandler(void){uint32_t pos;
   if((TIMG12->CPU_INT.IIDX) == 1){ // this will acknowledge
     
@@ -254,7 +254,7 @@ int main5T(void){ // main5T
 	  // nothing to do here
   }
 }
-int main5R(void){ // main5R
+int main(void){ // main5R
   __disable_irq();
   PLL_Init(); // set bus speed
   LaunchPad_Init();
@@ -267,12 +267,28 @@ int main5R(void){ // main5R
 
   while(1){uint32_t PositionReceive;
         // move cursor to top left
+          ST7735_SetCursor(0,0);
       // wait for first frame
+       do {
+    data1 = UART2_InChar();
+  } while(data1 != 0x3C);
       // increment ReceiveCount
+       ReceiveCount++;
       GPIOB->DOUTTGL31_0 = RED; // toggle PB26 (minimally intrusive debugging)
       // receive next three bytes of message
+  data2 = UART2_InChar(); // digit1 (ones place)
+  data3 = UART2_InChar(); // digit2 (tenths place)
+  data4 = UART2_InChar(); // digit3 (hundredths place)
+
       // output message
+      ST7735_OutChar(data2);
+  ST7735_OutChar('.');
+  ST7735_OutChar(data3);
+  ST7735_OutChar(data4);
+  ST7735_OutChar('\n');
+
       // calculate PositionReceive from the message
+  PositionReceive = (data2-'0')*1000 + (data3-'0')*100 + (data4-'0')*10;
     if((ReceiveCount%15)==0){
       ST7735_PlotPoint(PositionReceive);
       ST7735_PlotNextErase(); // data plotted at about 2 Hz
