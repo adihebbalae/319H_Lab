@@ -1,0 +1,21 @@
+# CCS build output
+Debug/
+Release/
+
+# CCS/Eclipse metadata (machine-specific, regenerated on import)
+.settings/
+*.ccsproject
+
+# Keep .project and .cproject — friend needs these to import in CCS
+# Keep .ccxml — target config needed for debug
+
+# Object/map/listing files
+*.obj
+*.out
+*.map
+*.lst
+*.d
+
+# Temp files
+*.tmp
+*.bak
