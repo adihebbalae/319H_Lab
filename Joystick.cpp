@@ -32,7 +32,7 @@ void Joystick_Init(void) {
 // return current state of joystick
 uint32_t Joystick_ReadX(void) {
     ADC1->ULLMEM.CTL0 &= ~0x00000001;  // clear ENC to unlock config
-    ADC1->ULLMEM.MEMCTL[0] = 6;        // ch6 = PB19 (left/right)
+    ADC1->ULLMEM.MEMCTL[0] = 4;        // ch6 = PB19 (left/right)
     ADC1->ULLMEM.CTL0 |= 0x00000001;   // ENC=1
     ADC1->ULLMEM.CTL1 |= 0x00000100;   // start
     uint32_t volatile delay = ADC1->ULLMEM.STATUS;
@@ -42,7 +42,7 @@ uint32_t Joystick_ReadX(void) {
 
 uint32_t Joystick_ReadY(void) {
     ADC1->ULLMEM.CTL0 &= ~0x00000001;  // clear ENC to unlock config
-    ADC1->ULLMEM.MEMCTL[0] = 4;        // ch4 = PB17 (up/down)
+    ADC1->ULLMEM.MEMCTL[0] = 6;        // ch4 = PB17 (up/down)
     ADC1->ULLMEM.CTL0 |= 0x00000001;   // ENC=1
     ADC1->ULLMEM.CTL1 |= 0x00000100;   // start
     uint32_t volatile delay = ADC1->ULLMEM.STATUS;

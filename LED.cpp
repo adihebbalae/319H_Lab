@@ -19,12 +19,12 @@ void LED_Init(void){
     //   bit 16 is pull down control
     //   bit 7 is PC peripheral connected, enable transparent data flow
     //   bit 0 selects GPIO function
-      IOMUX->SECCFG.PINCM[PA15INDEX] = (uint32_t) 0x00000081;
+      // PA15 intentionally skipped — shared with internal DAC output (PA15 = DACout)
       IOMUX->SECCFG.PINCM[PA16INDEX] = (uint32_t) 0x00000081;
       IOMUX->SECCFG.PINCM[PA17INDEX] = (uint32_t) 0x00000081;
     // DOE31_0 Data output enable
-      GPIOA->DOE31_0 |= (1<<15)|(1<<16)|(1<<17);
-      GPIOA->DOUTCLR31_0 = (1<<15)|(1<<16)|(1<<17); // LED1 off
+      GPIOA->DOE31_0 |= (1<<16)|(1<<17);
+      GPIOA->DOUTCLR31_0 = (1<<16)|(1<<17); // D2/D3 off
 }
 // data specifies which LED to turn on
 void LED_On(uint32_t data){

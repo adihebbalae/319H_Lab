@@ -7,6 +7,8 @@
 #define SOUND_H
 #include <stdint.h>
 
+#define MUSIC_TRACK_COUNT 3
+
 // initialize a 11kHz SysTick, however no sound should be started
 // initialize any global variables
 // Initialize the 5 bit DAC
@@ -35,5 +37,26 @@ void Sound_Fastinvader2(void);
 void Sound_Fastinvader3(void);
 void Sound_Fastinvader4(void);
 void Sound_Highpitch(void);
+uint8_t Sound_Done(void);
+
+// ---- Background music streaming from SD card ----
+// Call Music_Init() after ST7735_InitR() and disk_initialize() in main.
+// Call Music_Task() every iteration of the main loop to refill buffers.
+void Music_Init(void);   // mount FatFS, open file, preload buffers
+void Music_Start(void);  // begin streaming
+void Music_Stop(void);   // pause streaming, output silence
+uint8_t Music_Reset(void);  // restart current track from the beginning
+void Music_Task(void);   // refill ping-pong buffer — call from main loop
+void Music_SelectTrack(uint8_t track); // switch to track 0..MUSIC_TRACK_COUNT-1
+uint8_t Music_GetTrack(void);
+uint8_t Music_GetTrackCount(void);
+
+// Music volume — shift applied to each 8-bit sample when mixed to 12-bit DAC.
+// 4 = unity (default), 3 = half amplitude, 5 = 2x (may clip). Valid range 1..5.
+void Music_SetVolume(uint8_t shift);
+
+// Short "piece moved" SFX — first 880 samples (~80 ms) of shoot.
+// Brief enough that the music dip is imperceptible.
+void Sound_Move(void);
 
 #endif

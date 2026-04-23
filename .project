@@ -31,9 +31,9 @@
 			<locationURI>PARENT-1-PROJECT_LOC/inc/Clock.cpp</locationURI>
 		</link>
 		<link>
-			<name>DAC5.cpp</name>
+			<name>DAC.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/inc/DAC5.cpp</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/inc/DAC.cpp</locationURI>
 		</link>
 		<link>
 			<name>LaunchPad.cpp</name>
@@ -51,6 +51,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/inc/ST7735.cpp</locationURI>
 		</link>
 		<link>
+			<name>ST7735R</name>
+			<type>2</type>
+			<location>C:/Users/boomb/Documents/_319H/MSPM0_ValvanoWare/ST7735R</location>
+		</link>
+		<link>
 			<name>SlidePot.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/inc/SlidePot.cpp</locationURI>
@@ -64,6 +69,16 @@
 			<name>Timer.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/inc/Timer.cpp</locationURI>
+		</link>
+		<link>
+			<name>diskio.cpp</name>
+			<type>1</type>
+			<location>C:/Users/boomb/Documents/_319H/MSPM0_ValvanoWare/SDCFilecpp/diskio.cpp</location>
+		</link>
+		<link>
+			<name>ff.cpp</name>
+			<type>1</type>
+			<location>C:/Users/boomb/Documents/_319H/MSPM0_ValvanoWare/SDCFilecpp/ff.cpp</location>
 		</link>
 	</linkedResources>
 </projectDescription>
